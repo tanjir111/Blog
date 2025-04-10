@@ -1,0 +1,396 @@
+/* General Styles */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+#container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    background-color: #f4f4f9;
+}
+
+#navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5px;
+    background-color: #2c3e50;
+    color: white;
+}
+
+#navbar h3 {
+    margin: 0;
+    font-size: 24px;
+}
+
+#navigation {
+    display: flex;
+    gap: 20px;
+}
+
+#navigation a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s ease;
+}
+
+#navigation a:hover {
+    color: #1abc9c;
+}
+
+#menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Home Section */
+#home {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 80px 10px;
+}
+
+#leftHome {
+    max-width: 600px;
+}
+
+/* Animation for Greeting */
+@keyframes slideInFromLeft {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+#greeting {
+    font-size: 36px;
+    font-weight: bold;
+    margin: 0;
+    opacity: 0; /* Start invisible */
+    animation: slideInFromLeft 1s ease-out forwards; /* Animation for greeting */
+}
+#greeting span {
+    color: #1abc9c;
+}
+
+/* Animation for Role */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+#role {
+    font-size: 24px;
+    color: #555;
+    margin: 10px 0 20px;
+    opacity: 0; /* Start invisible */
+    animation: fadeIn 1s ease-out 1s forwards; /* Delay animation for role */
+}
+
+
+
+#aboutMeBtn {
+    background-color: #1abc9c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+#aboutMeBtn:hover {
+    background-color: #16a085;
+}
+
+#aboutMeBtn a {
+    color: white;
+    text-decoration: none;
+}
+
+#rightHome img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    #navigation {
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        background-color: #2c3e50;
+        padding: 10px;
+        border-radius: 5px;
+        z-index: 1000
+    }
+
+    #navigation.active {
+        display: flex;
+    }
+
+    #menu-toggle {
+        display: block;
+    }
+
+    #home {
+        flex-direction: column;
+        text-align: center;
+        padding: 50px 0;
+    }
+
+    #leftHome {
+        margin-bottom: 30px;
+    }
+
+    #greeting {
+        font-size: 28px;
+    }
+
+    #role {
+        font-size: 20px;
+    }
+}
+/* Photography Styles */
+
+
+#photoContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.photo {
+    position: relative;
+    overflow: hidden;
+    height: 300px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.photo:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.photo img {
+    width: 100%;
+    height: fit-content;
+    display: block;
+    border-radius: 10px 10px 0 0;
+    cursor: pointer; /* Indicates the image is clickable */
+}
+
+.photo figcaption {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    text-align: center;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 0 0 10px 10px;
+}
+
+/* Lightbox Styles */
+#lightbox {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+#lightbox.active {
+    display: flex; /* Show lightbox when active */
+}
+
+#lightbox-img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#caption {
+    position: absolute;
+    bottom: 20px;
+    color: white;
+    font-size: 18px;
+    text-align: center;
+}
+
+#close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+#close:hover {
+    color: #ff4d4d; /* Red color on hover */
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    #photoContainer {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+/* content Styles */
+
+#contentContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.content {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 300px; /* Fixed height */
+    overflow: hidden; /* Hide overflow text */
+    cursor: pointer; /* Indicates clickable */
+}
+
+.content:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.poemTitle {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #2c3e50;
+    text-align: center;
+}
+
+.content p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #555;
+    text-align: justify;
+}
+
+/* Lightbox Styles */
+#poemLightbox {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+#poemLightbox.active {
+    display: flex; /* Show lightbox when active */
+}
+
+#poemContent {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto; /* Scrollable content */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#lightboxPoemTitle {
+    font-size: 28px;
+    font-weight: bold;
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#lightboxPoemText {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #555;
+    text-align: justify;
+}
+
+#closePoem {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+#closePoem:hover {
+    color: #ff4d4d; /* Red color on hover */
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    #contentContainer {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    .poemTitle {
+        font-size: 20px;
+    }
+
+    .content p {
+        font-size: 14px;
+    }
+
+    #poemContent {
+        padding: 20px;
+    }
+
+    #lightboxPoemTitle {
+        font-size: 24px;
+    }
+
+    #lightboxPoemText {
+        font-size: 16px;
+    }
+}

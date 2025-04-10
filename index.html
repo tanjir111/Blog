@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="container">
+        <div id="navbar">
+            <h3>Md Tanjir Hossain</h3>
+            <nav id="navigation">
+                <a href="blogs.html">Home</a>
+                <a href="movies.html">Movie Reviews</a>
+                <a href="books.html">Book Reviews</a>
+                <a href="poems.html">Poems</a>
+                <a href="photography.html">Photography</a>
+                <a href="academics.html">Academic</a>
+            </nav>
+            <button id="menu-toggle">☰</button>
+        </div>
+        <div id="home">
+            <div id="leftHome">
+                <p id="greeting">Hello, there! I'm <span>Md Tanjir Hossain</span></p>
+                <p id="role">Welcome to Tanu's Blog</p>
+                <button id="aboutMeBtn"><a href="index.html">My Portfolio</a></button>
+            </div>
+            <div id="rightHome">
+                <img src="tanjir3.png" alt="Md Tanjir Hossain">
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const nav = document.getElementById('navigation');
+            nav.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
