@@ -3,9 +3,885 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>BERT vs. GPT: A Transformer Showdown</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        #container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        #navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        #navbar h3 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+        }
+        
+        #navigation {
+            display: flex;
+            gap: 20px;
+        }
+        
+        #navigation a {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        #navigation a:hover {
+            color: #e74c3c;
+        }
+        
+        #menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        #contentContainer {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .content {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 300px; /* Fixed height */
+            overflow: hidden; /* Hide overflow text */
+            cursor: pointer; /* Indicates clickable */
+        }
+        
+        .content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .poemTitle {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            text-align: center;
+        }
+        
+        .innerContent {
+            font-family: 'Georgia', serif;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 1.5em;
+            text-align: justify;
+            hyphens: auto;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 1rem;
+        }
+        
+        .innerContent blockquote {
+            border-left: 4px solid #e74c3c;
+            padding-left: 20px;
+            margin: 20px 0;
+            font-style: italic;
+            color: #555;
+        }
+        
+        .innerContent table {
+            width: fit-content;
+            margin: 20px 0;
+            max-width: 100%;
+            overflow-x:scroll;
+        }
+        
+        .innerContent table th, .innerContent table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+            white-space: normal;
+        }
+        
+        .innerContent table th {
+            background-color: #f2f2f2;
+        }
+        
+        .innerContent ul {
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+        
+        #poemLightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 40px;
+        }
+        
+        #poemLightbox.active {
+            display: block;
+        }
+        
+        #poemContent {
+            background: white;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+            border-radius: 8px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        #closePoem {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 1001;
+        }
+        
+        #lightboxPoemTitle {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e74c3c;
+            padding-bottom: 10px;
+            top: 0;
+            background: white;
+            z-index: 1;
+            padding-top: 10px;
+        }
+        
+        #lightboxPoemText {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #444;
+            overflow-wrap: break-word;
+        }
+        
+        #lightboxPoemText blockquote {
+            border-left: 4px solid #e74c3c;
+            padding-left: 20px;
+            margin: 20px 0;
+            font-style: italic;
+            color: #555;
+        }
+        
+        #lightboxPoemText table {
+            width: fit-content;
+            margin: 20px 0;
+            max-width: 100%;
+            overflow-x: scroll;
+            align-items: center;
+        }
+        
+        #lightboxPoemText table th, 
+        #lightboxPoemText table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+            white-space: normal;
+        }
+        
+        #lightboxPoemText table th {
+            background-color: #f2f2f2;
+        }
+        
+        #lightboxPoemText ul {
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            #navigation {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                gap: 10px;
+                margin-top: 15px;
+            }
+            
+            #navigation.active {
+                display: flex;
+            }
+            
+            #menu-toggle {
+                display: block;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .poemTitle {
+                font-size: 1.5rem;
+            }
+            
+            #poemLightbox {
+                padding: 20px;
+            }
+            
+            #poemContent {
+                padding: 20px;
+                max-width: 100%;
+            }
+            
+            #lightboxPoemText table {
+                display: block;
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h3>Not found</h3>
+    <div id="container">
+        <div id="navbar">
+            <h3>Md Tanjir Hossain</h3>
+            <nav id="navigation">
+                <a href="index.html">Home</a>
+                <a href="movies.html">Movie Reviews</a>
+                <a href="books.html">Book Reviews</a>
+                <a href="poems.html">Poems</a>
+                <a href="photography.html">Photography</a>
+                <a href="academics.html">Academic</a>
+            </nav>
+            <button id="menu-toggle">☰</button>
+        </div>
+        <div id="contentContainer">
+            <div class="content">
+                <h4 class="poemTitle">BERT vs. GPT: A Transformer Showdown (Starring Optimus and Bumblebee)</h4>
+                <div class="innerContent">
+                    "This is not the end, but a new beginning." <br>
+                    &mdash;Optimus Prime, Transformers: Age of Extinction<br><br>
+                    
+                    The age of Transformers has began but not by the kind from the movies. Not the sentient robots from Cybertron but a different kind of Transformer, built with neural networks, are creating a revolution in the field of Natural Language Processing. BERT and GPT are standing at the core of this revolution.<br><br>
+                    
+                    In this world of Transformers, BERT is like Optimus Prime&mdash;wise, balanced, and always aware of the full context. He processes language in both directions, ensuring he fully understands before making a move. Whereas GPT is our Bumblebee, who is quick, creative, and fluent in a dozen tongues. He sees the world one step at a time, generating the future as he goes.<br><br>
+                    
+                    Both of them were built utilising the same architecture called Transformer but their paths diverged. One became a master of understanding and the other a champion of generation. In this post, these two models and their influence in the new era of AI will be explored through the lens of the Transformers universe.<br><br>
+                    
+                    Because this is a new beginning rather than the end in language, as in Cybertron.<br><br>
+                    
+                    ---<br><br>
+                    
+                    <b>The Matrix of Leadership: Enter the Transformers</b><br><br>
+                    
+                    In the world of Cybertron, the Matrix of Leadership powered the Prime lineage and provided insight, strength, and the ability to unify. In our universe, the &ldquo;Matrix&rdquo; that reshaped modern NLP is the Transformer architecture. Released in 2017 by Vaswani et al. in their paper &ldquo;Attention Is All You Need,&rdquo; this model started a revolution not unlike the rise of the Autobots themselves.<br><br>
+                    
+                    Before Transformers, we relied on RNNs and LSTMs&mdash;models that processed language sequentially, like soldiers marching single file. They were powerful, but limited: slow to train, and prone to forgetting what came before. Transformers changed all that with one powerful weapon:<br><br>
+                    
+                    <blockquote><b>Self-attention.</b></blockquote>
+                    
+                    Self-attention allows the model to look at <b>all parts of a sentence at once</b>, weighing the importance of each word in relation to the others&mdash;regardless of position. No more trudging word-by-word. It&rsquo;s like giving a bot 360-degree vision and instant recall of everything happening on the battlefield.<br><br>
+                    
+                    But Transformers aren&rsquo;t a monolith. They&rsquo;re more like a species, with different forms adapted for different tasks. Two of the most famous? BERT and GPT. Both were forged in the same mold, yet each inherited the Matrix differently.<br><br>
+                    
+                    Optimus or BERT chose understanding, absorbing the full picture before taking action.<br>
+                    Bumblebee or GPT chose fluency, acting swiftly, word by word, to create fluid and coherent speech.<br><br>
+                    
+                    So how do these two warriors differ in their build and behavior? Let&rsquo;s open their schematics.<br><br>
+                    
+                    ---<br><br>
+                    
+                    <b>Optimus: The Bidirectional Guardian</b><br><br>
+                    
+                    When Optimus Prime steps into battle, he surveys every angle. He sees what lies ahead, remembers what came before, and makes calculated, wise decisions. <b>BERT</b> (Bidirectional Encoder Representations from Transformers) follows the same principle.<br><br>
+                    
+                    Released by Google in 2018, BERT was designed not to generate text, but to deeply <b>understand it</b>. It&rsquo;s an <b>encoder-only</b> model&mdash;meaning it takes in input all at once and processes it in both directions. Just like Optimus doesn&rsquo;t charge into a fight without looking behind and around him, BERT reads text by considering <b>both left and right context</b> simultaneously.<br><br>
+                    
+                    <b>How it works:</b><br><br>
+                    
+                    Instead of predicting the next word like GPT, BERT is trained using <b>Masked Language Modeling (MLM)</b>. During training, it hides (or &ldquo;masks&rdquo;) some words in a sentence and tries to predict them based on the surrounding context.<br><br>
+                    
+                    <blockquote>
+                    &ldquo;The Autobots protect the [MASK] from Decepticons.&rdquo;
+                    </blockquote>
+                    
+                    BERT might predict: <i>world, Earth, humans</i> &mdash; depending on the context it has seen.<br><br>
+                    
+                    This bidirectional attention allows BERT to develop a <b>deep sense of meaning and nuance</b> in language. It doesn&rsquo;t just know what words are likely&mdash;it knows <i>why</i> they belong.<br><br>
+                    
+                    <b>What BERT is great at:</b><br>
+                    <ul>
+                    <li>Text classification (e.g., sentiment analysis)</li>
+                    <li>Question answering (used in Google Search)</li>
+                    <li>Named entity recognition</li>
+                    <li>Natural language inference</li>
+                    </ul>
+                    
+                    BERT&rsquo;s strength lies in <b>understanding context-rich input</b>&mdash;making it ideal for tasks that require comprehension, rather than generation.<br><br>
+                    
+                    He doesn&rsquo;t speak much, but when he does, Optimus chooses his words carefully. BERT does the same&mdash;processing language with calm, calculated clarity.<br><br>
+                    
+                    ---<br><br>
+                    
+                    <b>Bumblebee: The Autoregressive Maverick</b><br><br>
+                    
+                    If BERT is the wise leader, GPT is the charming rebel&mdash;the Bumblebee of the NLP world. Quick-witted, adaptive, and always ready with a line (or a whole paragraph), GPT isn&rsquo;t here to <i>analyze</i> language. He&rsquo;s here to <i>create</i> it.<br><br>
+                    
+                    <b>GPT</b> (Generative Pre-trained Transformer), first introduced by OpenAI in 2018 and now powering tools like ChatGPT and GitHub Copilot, is built from the <b>decoder</b> half of the Transformer architecture. Unlike BERT, which looks at both directions in a sentence, GPT is unidirectional: it reads from left to right, predicting the next word one token at a time, just like Bumblebee zipping through a sentence in real time.<br><br>
+                    
+                    <b>How it works:</b><br><br>
+                    
+                    GPT is trained with <b>Causal Language Modeling (CLM)</b>. Instead of filling in blanks like BERT, it learns to guess the <i>next</i> word in a sequence, based only on what it&rsquo;s seen so far.<br><br>
+                    
+                    <blockquote>
+                    &ldquo;Bumblebee raced across the battlefield, blasting&hellip;&rdquo;
+                    </blockquote>
+                    
+                    GPT might continue with: <i>Decepticons, enemies, sparks of light, missiles</i>&hellip; depending on its training.<br><br>
+                    
+                    It&rsquo;s not just guessing, it&rsquo;s weaving fluent, coherent, and often creative text based on massive amounts of data. And once you give it a prompt, it just keeps going.<br><br>
+                    
+                    <b>What GPT is great at:</b><br>
+                    <ul>
+                    <li>Text generation (chat, stories, emails, etc.)</li>
+                    <li>Code completion</li>
+                    <li>Translation</li>
+                    <li>Summarization</li>
+                    <li>Conversational AI</li>
+                    </ul>
+                    
+                    Unlike BERT, GPT isn&rsquo;t trying to understand a full passage&mdash;it&rsquo;s <b>thinking out loud</b>, word by word, like a DJ freestyling in the middle of a Cybertronian battle.<br><br>
+                    
+                    Bumblebee doesn&rsquo;t need to see the whole picture before he acts&mdash;he makes sense of the world <i>as it comes</i>. GPT works the same way: agile, fast, and surprisingly articulate.<br><br>
+                    
+                    ---<br><br>
+                    
+                    <b>Cybertron&rsquo;s Split: How BERT and GPT Differ?</b><br><br>
+                    
+                    BERT and GPT were born from the same architecture but their oaths were different. They are like Autobots called to serve different purposes in the war for Cybertron.<br><br>
+                    
+                    <b>Directionality:</b><br>
+                    BERT is a strategist. Before making a move, he scans the battlefield and analyzes both past and future.<br>
+                    Whereas, GPT is a scout. He charges forward, reacting to what he&rsquo;s seen and guessing what comes next, moment by moment.<br><br>
+                    
+                    <blockquote>
+                    BERT: "I must understand the whole sentence before I act."<br>
+                    GPT: "Let&rsquo;s take it one word at a time&mdash;I&rsquo;ve got this."
+                    </blockquote>
+                    
+                    <b>Architecture:</b><br>
+                    BERT uses an encoder-only frame which focuses entirely on interpretation.<br>
+                    GPT is decoder-only and designed for expression.<br><br>
+                    
+                    <b>Training Objective:</b><br>
+                    BERT trains by solving riddles. It sees a sentence with key words hidden and fills in the blanks.<br>
+                    GPT trains like a storyteller. It reads millions of lines and keep guessing what comes next.<br><br>
+                    
+                    <b>Use Cases:</b><br>
+                    BERT shines in comprehension-heavy tasks, like classification and search.<br>
+                    GPT is good for creative tasks, like writing, chatting, and summarizing.<br><br>
+                    
+                    <table border="1" cellpadding="5">
+                    <tr><th>BERT (Optimus Prime)</th><th>GPT (Bumblebee)</th></tr>
+                    <tr><td>Understands before acting</td><td>Acts while understanding</td></tr>
+                    <tr><td>Sees the full picture</td><td>Predicts one step ahead</td></tr>
+                    <tr><td>Analytical, grounded</td><td>Creative, improvisational</td></tr>
+                    <tr><td>Trained to fill blanks</td><td>Trained to keep going</td></tr>
+                    </table><br><br>
+                    
+                    Even on Cybertron, two warriors can share the same spark yet fight in entirely different ways. BERT and GPT aren&rsquo;t rivals. Instead, they&rsquo;re reflections of how language can be both understood and created.<br><br>
+                    
+                    ---<br><br>
+                    
+                    <b>The War Evolves: What Comes Next</b><br><br>
+                    
+                    On Cybertron, no battle truly ends, it only transforms. And in the world of NLP, the saga of BERT and GPT is just the beginning.<br><br>
+                    
+                    Since their debut, newer models have emerged that blur the lines between understanding and generation. <b>T5</b>, <b>BART</b>, and <b>FLAN</b> combine encoder and decoder architectures, fusing the minds of Optimus and Bumblebee into a single warrior. And now with models like <b>GPT-4</b> and <b>Gemini</b>, the lines between reasoning, creativity, and comprehension grow thinner with every iteration.<br><br>
+                    
+                    The future? It's not about picking sides. It&rsquo;s about integration&mdash;models that can <b>understand like BERT</b> and <b>generate like GPT</b>, all in one fluid, adaptive system. Transformers are learning to think, speak, and even reason across modalities&mdash;text, images, code, and beyond.<br><br>
+                    
+                    And these models are evolving to work with us, just like the Autobots.<br><br>
+                    
+                    <blockquote>
+                    "There&rsquo;s a thin line between being a hero and being a memory." <br>
+                    &mdash; Optimus Prime
+                    </blockquote><br>
+                    
+                    BERT and GPT have already established themselves as heroes in the field of language modeling. However, their influence can still be seen in every chatbot, intelligent search engine, and artificial intelligence system that can help us to navigate through the web of human knowledge.<br><br>
+                    
+                    Because this isn&rsquo;t the end.<br><br>
+                    It&rsquo;s just the next transformation.
+                </div>                                    
+            </div>
+            <div class="content">
+                <h4 class="poemTitle">How GPT's Architecture and Training Transformed AI: A Deep Dive</h4>
+                <div class="innerContent">
+                    <p>Since the launch, OpenAI's Generative Pre-trained Transformer (GPT) has revolutionized the field of natural language processing (NLP) and pushed the boundaries of what language models can achieve. All of it began in 2018 with the paper titled, "Improving Language Understanding by Generative Pre-Training". OpenAI introduced a simple but powerful idea there which said "Train a model on vast amounts of unlabeled text and then fine-tune it for specific tasks". And this unsupervised pretraining approach with task-specific fine-tuning started a new era in the machine learning field.</p>
+            
+                    <p>The journey didn't stop there. In 2020, OpenAI unveiled a major breakthrough with "Language Models are Few-Shot Learners," demonstrating that by massively scaling up models to an astonishing 175 billion parameters. GPT-3 could perform tasks with little or even no task-specific training. This finding rejected previous assumptions about the need for extensive supervised learning and showed the power of generalization in massive neural networks.</p>
+            
+                    <p>Fast forward to 2023, and the release of the GPT-4 Technical Report marked yet another leap forward. GPT-4 brought advanced reasoning abilities, greater safety, and, for the first time, multimodal capabilities, pushing AI closer to general-purpose intelligence than ever before.</p>
+            
+                    <h3>The Core Architecture of GPT: What Makes the Transformer So Powerful?</h3>
+            
+                    <p>The Transformer architecture, which was presented for the first time in 2017 in the paper titled "Attention Is All You Need" by Vaswani et al. It laid the foundation of GPT. The way that machines process data sequences has been radically altered by this architecture. Unlike older models like RNNs or LSTMs that struggled with long-term dependencies, Transformers introduced self-attention mechanisms, allowing the model to dynamically weigh the importance of different words in a sentence, no matter how far apart they were.</p>
+            
+                    <p>The original Transformer had two sides: encoder and decoder. GPT uses the decoder side. Its architecture is optimized for autoregressive generation, predicting the next word in a sequence based on the previous ones. GPT employs masked self-attention to ensure this. It prevents the model from snooping on future tokens during training. Every word is predicted by one step at one time, in order, much like writing a story where one only knows what's already been said.</p>
+            
+                    <p>Supporting these mechanisms are crucial components like layer normalization and residual connections, which stabilize the training of deep networks and make it possible to scale the model to hundreds or even thousands of layers.</p>
+            
+                    <p>GPT-1 introduced these ideas at a small scale. Later, models like GPT-3 and GPT-4 took them to new heights. They refined the architecture with deeper networks, better optimization strategies, and more efficient attention mechanisms so that growing complexities could be managed.</p>
+            
+                    <h3>Training Methods: From Unsupervised Pretraining to RLHF</h3>
+            
+                    <p>The focus was on unsupervised pretraining during the early days with GPT-1 and GPT-2. Models were trained on massive datasets like BooksCorpus and Wikipedia, simply learning to predict the next word without any human-labeled supervision. Afterward, they could be fine-tuned for specific tasks like sentiment analysis or translation using much smaller, labeled datasets.</p>
+            
+                    <p>However, as researchers scaled up the size and dataset of GPT-2, something fascinating happened: even without task-specific fine-tuning, the model could generalize to new tasks by simply reading examples at inference time. This surprising capability hinted at the potential of in-context learning.</p>
+            
+                    <p>GPT-3 confirmed this hypothesis in spectacular fashion. With its 175 billion parameters and exposure to over 300 billion tokens, GPT-3 demonstrated few-shot and even zero-shot learning. Instead of retraining the model, you could just provide a few examples in the prompt, and the model would figure out the task. This opened up an entirely new way to interact with language models and make them more flexible and accessible.</p>
+            
+                    <p>When it came to GPT-4, OpenAI pushed the training methods even further by incorporating Reinforcement Learning from Human Feedback (RLHF). Initially, human trainers created high-quality responses that were used to fine-tune the model. Then, a reward model was trained to rank different outputs by preference. GPT-4 was fine-tuned to maximize these rewards using algorithms like Proximal Policy Optimization (PPO). It lead to outputs that were more helpful, truthful, and aligned with human intent.</p>
+            
+                    <p>Together, pretraining, few-shot prompting, and human-guided fine-tuning improved GPT-4's ability to follow complex instructions, reason through difficult tasks, and avoid harmful or illogical outputs.</p>
+            
+                    <h3>Scaling Laws and Innovations: Why Bigger Often Means Better?</h3>
+            
+                    <p>More data and computation weren't the only factors that made GPT-3 and GPT-4 such a success. A paper titled, "Scaling Laws for Neural Language Models" by Kaplan et al. (2020) revealed that performance scales predictably with the size of the model, the amount of data, and also the amount of computation.</p>
+            
+                    <p>Larger models didn't just get bigger—they got smarter. They required less number of training steps per parameter to reach a certain level of performance, making scaling a surprisingly efficient way to boost capabilities.</p>
+            
+                    <p>Of course, there were diminishing returns, and simply making models larger eventually hits practical limits. But with GPT-4, OpenAI showed that smart scaling—focusing on better data quality, more efficient training techniques (potentially even exploring mixture-of-experts architectures), and integrating multimodal inputs—could continue to push performance forward without needing infinite compute.</p>
+            
+                    <p>This smart scaling strategy enabled GPT-4 to develop surprising new abilities, like more nuanced reasoning and the ability to handle images as well as text, although the full details of these innovations remain closely guarded.</p>
+            
+                    <h3>Key Differences Across GPT Generations</h3>
+            
+                    <p>To find out how far we've come, it's useful to take a glance through the key innovations from GPT-1 to GPT-4:</p>
+            
+                    <table border="1" cellpadding="5">
+                        <tr>
+                            <th>Model</th>
+                            <th>Parameters</th>
+                            <th>Key Innovation</th>
+                            <th>Training Approach</th>
+                        </tr>
+                        <tr>
+                            <td>GPT-1 (2018)</td>
+                            <td>117M</td>
+                            <td>Introduced generative pre-training</td>
+                            <td>Unsupervised language modeling + fine-tuning</td>
+                        </tr>
+                        <tr>
+                            <td>GPT-2 (2019)</td>
+                            <td>1.5B</td>
+                            <td>Scaled up, demonstrated strong zero-shot ability</td>
+                            <td>Trained on massive unlabeled text, less reliance on fine-tuning</td>
+                        </tr>
+                        <tr>
+                            <td>GPT-3 (2020)</td>
+                            <td>175B</td>
+                            <td>Few-shot and zero-shot learning via in-context prompts</td>
+                            <td>Massive dataset, in-context learning, minimal fine-tuning</td>
+                        </tr>
+                        <tr>
+                            <td>GPT-4 (2023)</td>
+                            <td>~1T? (est.)</td>
+                            <td>RLHF, multimodal capabilities, safer alignment</td>
+                            <td>Human feedback, reward modeling, reinforcement learning</td>
+                        </tr>
+                    </table>
+            
+                    <p>Over the time, it became clear that scaling helps, but data quality is just as important. For instance, GPT-4, emphasized filtering and curating datasets much more carefully than earlier models.</p>
+            
+                    <p>Another important shift was to find that alignment is as crucial as raw capability. It's not enough for models to be powerful. They must also be aligned with human values and safety concerns. The use of RLHF in GPT-4 was a major step toward this goal.</p>
+            
+                    <h3>Conclusion: What's Next for GPT?</h3>
+            
+                    <p>The journey began with GPT-1's foundational experiments with generative pretraining. Now, GPT-4 provides human-aligned multimodal intelligence. The evolution of GPT models has been more than extraordinary.</p>
+            
+                    <p>The only common threads running through this journey were the combination of Transformer architecture and massive scale consistently unlocks new capabilities. At the same time, training methods evolved from simple language modeling to few-shot learning and eventually to RLHF making each generation smarter, safer, and more versatile.</p>
+            
+                    <p>Yet, challenges remain. Future GPT models will need to become more efficient, more capable of real-time learning, and better at ethical decision-making.</p>
+            
+                    <p>The future of GPT is still being written. As we stand at the edge of what these systems can do, one question still remains: <br>
+                    <em>"Where will GPT-5 take us?"</em></p>
+                </div>
+            </div>
+            <div class="content">
+                <h4 class="poemTitle">Language Model and Its Evolution</h4>
+                <div class="innerContent">
+                    <p>A Language Model is a system for machine to understand human language and predict the next word in a sequence given previous words. You can call it an smart autocomplete system.</p>
+                    
+                    <p>Let's say you're typing: "In to the..."<br>
+                    A language model might suggest: "Wild", "Night", "Blue" or "Dome".<br>
+                    It makes these guesses based on patterns it has learned from massive amounts of text. The more context the model has, the smarter its guesses get.</p>
+            
+                    <p>Language models don't "understand" words like we do. Instead, they:</p>
+                    <ul>
+                        <li>Tokenize text (break it into chunks—words, subwords, or characters)</li>
+                        <li>Convert those tokens into numbers so they can be processed by algorithms</li>
+                        <li>Learn statistical patterns from large datasets</li>
+                        <li>Use those patterns to predict what comes next</li>
+                    </ul>
+            
+                    <h3>The Evolution of Language Models</h3>
+                    
+                    <p>Over time, language models have evolved a lot:</p>
+                    
+                    <table border="1" cellpadding="5">
+                        <tr>
+                            <th>Era</th>
+                            <th>Milestone</th>
+                            <th>Significance</th>
+                        </tr>
+                        <tr>
+                            <td>1950</td>
+                            <td>Alan Turing proposes the Turing Test</td>
+                            <td>Laid philosophical groundwork for NLP</td>
+                        </tr>
+                        <tr>
+                            <td>1960s</td>
+                            <td>ELIZA created</td>
+                            <td>First chatbot using scripted rules</td>
+                        </tr>
+                        <tr>
+                            <td>1980s-90s</td>
+                            <td>Statistical n-gram models</td>
+                            <td>Basic word prediction using limited context</td>
+                        </tr>
+                        <tr>
+                            <td>2010s</td>
+                            <td>Word2Vec, GloVe</td>
+                            <td>Introduced word embeddings for semantic understanding</td>
+                        </tr>
+                        <tr>
+                            <td>2010s</td>
+                            <td>RNNs, LSTMs</td>
+                            <td>Sequence-based understanding</td>
+                        </tr>
+                        <tr>
+                            <td>2017</td>
+                            <td>Transformer architecture</td>
+                            <td>Revolutionized language processing</td>
+                        </tr>
+                        <tr>
+                            <td>2018+</td>
+                            <td>BERT, GPT, and other LLMs</td>
+                            <td>Modern large language models</td>
+                        </tr>
+                    </table>
+            
+                    <h3>Current Applications</h3>
+                    
+                    <p>Language models are already powering our everyday tools:</p>
+                    
+                    <ul>
+                        <li>✨ Chatbots & assistants (ChatGPT, Alexa, Siri)</li>
+                        <li>🔎 Search engines (Google uses BERT)</li>
+                        <li>✍️ Email & writing tools (Gmail autocomplete, Grammarly)</li>
+                        <li>🌐 Translation (Google Translate, DeepL)</li>
+                        <li>💻 Code assistants (GitHub Copilot, ChatGPT coding mode)</li>
+                    </ul>
+            
+                    <p>They're also transforming:</p>
+                    
+                    <ul>
+                        <li>Healthcare 🏥</li>
+                        <li>Legal tech ⚖️</li>
+                        <li>Education 📚</li>
+                        <li>Customer support 💬</li>
+                        <li>Creative writing ✍️</li>
+                    </ul>
+            
+                    <h3>Looking Forward</h3>
+                    
+                    <p>From the early dream of passing the Turing Test to the reality of chatbots writing code and poetry, language models have come a long way. They don't think like us, feel like us, or truly understand like us—but they can still carry out conversations, solve problems, and spark creativity in ways that feel almost human.</p>
+            
+                    <p>We're living at the intersection of language and computation, where machines are learning to speak our language—and we're learning how to speak to them.</p>
+            
+                    <blockquote>
+                        The future of AI isn't just about making machines smarter.<br>
+                        It's about making them more aligned, accountable, and beneficial to the world they're shaping.
+                    </blockquote>
+                </div>
+            </div>
+            <div class="content">
+                <h4 class="poemTitle">What is BERT and Why Does It Matter?</h4>
+                <div class="innerContent">
+                    <p>Have you ever typed something weird or incomplete into Google, YouTube, or Netflix—and still ended up with exactly what you were looking for?</p>
+            
+                    <p>Ever noticed how YouTube or Amazon seem to suggest the exact thing you wanted to watch or buy next? Or how Gmail finishes your sentences as if it's reading your mind? Maybe you've seen Facebook or Twitter hiding offensive content, or your email inbox neatly sorting spam and promotions without you lifting a finger.</p>
+            
+                    <p>Have you ever wondered how all of this actually works?</p>
+            
+                    <p>Well, you can thank BERT for a lot of it as BERT plays a significant role in improving language understanding in search, email, and recommendations. BERT—which stands for Bidirectional Encoder Representations from Transformers—was introduced by Google in 2018 and completely changed the way machines understand language.</p>
+            
+                    <h3>The Pre-BERT Era</h3>
+                    
+                    <p>Before BERT, models like Bag of Words, TF-IDF, and Word2Vec had major limitations. They didn't understand context. Bag of words, for instance, ignored word order in text and the deeper meaning behind how words are used. An example of that can be, "bank" in "river bank" and "bank" in "open a bank account" looked exactly the same to the model.</p>
+            
+                    <p>BERT solved this problem by reading in both directions at the same time, which helped it to truly understand the meaning of words based on their full context. That simple-sounding shift—reading left-to-right and right-to-left at the same time—was a huge breakthrough for natural language understanding.</p>
+            
+                    <h3>How BERT Works</h3>
+                    
+                    <p>BERT uses the Transformer encoder (from the famous 2017 "Attention Is All You Need" paper) and is trained using two unsupervised tasks:</p>
+                    
+                    <ol>
+                        <li>
+                            <strong>Masked Language Modeling (MLM)</strong><br>
+                            Imagine you are shown a sentence like:<br>
+                            <em>"The [MASK] sat on the tree."</em><br>
+                            Then you are asked to guess the word at the place of [MASK]. You probably would say "bird". That's what BERT does during training—it randomly hides (or masks) ~15% words in a sentence and tries to predict them using the words around them. But the cool part is, since BERT reads in both directions, it uses context from both the left and the right to make its guess. In older models, the prediction would only consider words before the blank. BERT uses the entire sentence.
+                        </li>
+                        <br>
+                        <li>
+                            <strong>Next Sentence Prediction (NSP)</strong><br>
+                            Additionally, BERT is trained to understand the relationship between two sentences. For example:<br><br>
+                            
+                            If I say, <em>"I went to the supermarket"</em> and <em>"I bought some fish,"</em> and ask if these sentences can be consecutive, you would say, <em>"Yes."</em><br><br>
+                            
+                            But if I replace the second sentence with <em>"I attended my exam,"</em> you would say, <em>"No,"</em> because they are unrelated.<br><br>
+                            
+                            BERT is trained to recognize such relationships between sentences, which helps it perform tasks like question answering or reading comprehension—where understanding flow and logical connections across multiple sentences is crucial.
+                        </li>
+                    </ol>
+            
+                    <p>These two strategies—MLM and NSP—allow BERT to develop a deep, contextual understanding of language that's way beyond just memorizing word definitions.</p>
+            
+                    <h3>BERT's Impact and Evolution</h3>
+                    
+                    <p>BERT has been a turning point in NLP. Almost overnight, it set new records on a wide range of NLP benchmarks—everything from sentiment analysis to question answering. It started a wave of new transformer-based models that continue to push the boundaries of what machines can understand.</p>
+            
+                    <p>Since then, researchers have built many variations of BERT to improve performance, speed, and versatility:</p>
+                    
+                    <table border="1" cellpadding="5">
+                        <tr>
+                            <th>Variant</th>
+                            <th>Improvement</th>
+                        </tr>
+                        <tr>
+                            <td>RoBERTa, ALBERT, DistilBERT</td>
+                            <td>Architectural improvements for robustness and efficiency</td>
+                        </tr>
+                        <tr>
+                            <td>SciBERT, BioBERT</td>
+                            <td>Specialized for scientific and biomedical texts</td>
+                        </tr>
+                        <tr>
+                            <td>Multilingual BERT (mBERT), XLM-R</td>
+                            <td>Improved multilingual capabilities</td>
+                        </tr>
+                    </table>
+            
+                    <h3>BERT's Legacy</h3>
+                    
+                    <p>BERT also paved the way for larger-scale language models like GPT, T5, and PaLM. Models like GPT (Generative Pre-trained Transformer) focus on generation—like writing essays, poems, or even code. Whereas BERT is optimized for understanding tasks. Despite the rise of those massive language models, BERT and its variants are still widely used, especially when someone needs fast, reliable, and efficient tools for understanding text.</p>
+            
+                    <blockquote>
+                        To put it briefly, BERT didn't just make machines better at understanding us,<br>
+                        it reshaped the entire field of NLP and sparked a new era of language intelligence.
+                    </blockquote>
+                </div>
+            </div>
+            <div class="content">
+                <h4 class="poemTitle">Transformers, Explained Simply (No, Not the Robots)</h4>
+                <div class="innerContent">
+                    <p>In the year 2017, Vaswani et al. published a paper titled "Attention Is All You Need" and introduced a novel architecture called the Transformer. This model replaced recurrence with attention mechanisms and redefined the field of deep learning.</p>
+            
+                    <h3>The Pre-Transformer Era</h3>
+                    
+                    <p>Before Transformer, natural language processing (NLP) models used to rely heavily on recurrent architectures like RNNs, LSTMs, and GRUs. These models process text sequentially by passing hidden states word by word which make them slow and prone to forgetting long-range dependencies.</p>
+            
+                    <p>Take the sentence:<br>
+                    <em>"The bird, which was flying in the sky earlier in the morning, finally sat on the tree."</em><br>
+                    To link the subject "bird" with the verb "sat," an RNN would need to pass contextual information through several intermediate words ("which was flying in the sky..."). By the time it reaches "sat," the model might lose the relevance of "bird." This makes it difficult to capture relationships between words in distant positions.</p>
+            
+                    <h3>The Transformer Solution</h3>
+                    
+                    <p>The Transformer takes a different approach here. It uses self-attention. Using self-attention, each word in the sentence can directly "attend" to every other word and doesn't even have to consider the position. So when the model processes "sat," it can immediately consider the importance of "bird", assigning it a high attention weight which reflects how relevant another word is for understanding the current one.</p>
+            
+                    <h3>How Self-Attention Works</h3>
+                    
+                    <p>Here's the basic process:</p>
+                    
+                    <ol>
+                        <li>Every word is turned into three vectors: a Query, a Key, and a Value.</li>
+                        <li>To determine how much attention a word should pay to others, the model compares its Query to the Keys of all other words.</li>
+                        <li>The comparison results in attention scores. These attention scores are used to weight the Value vectors.</li>
+                        <li>Then, these weighted Values are combined to produce a new representation of the word. This new representation reflects the context of the entire sentence.</li>
+                    </ol>
+            
+                    <p>As a result, depending on its relevance, each word dynamically "pulls in" information from other parts of the sentence. Unlike RNNs, where word relationships are only passed forward step-by-step, attention gives each word global context right away. This architectural shift revolutionized NLP and laid the foundation for models like BERT and GPT, which now power tools like Google Search and ChatGPT.</p>
+            
+                    <h3>Transformer Architecture Components</h3>
+                    
+                    <p>The original Transformer model is composed of two main parts: an encoder and a decoder. Both are important in tasks like machine translation but models like BERT and GPT use only one of the two. BERT uses just the encoder stack, while GPT uses only the decoder stack.</p>
+            
+                    <h4>Encoder</h4>
+                    <p>Each encoder block has:</p>
+                    <ul>
+                        <li><strong>Multi-head self-attention:</strong> Allows each word to attend to every other word in the input.</li>
+                        <li><strong>Feedforward neural network:</strong> Applied independently to each position.</li>
+                        <li><strong>Add & Norm:</strong> Residual connections followed by layer normalization to stabilize training.</li>
+                    </ul>
+                    
+                    <p>At first, an input sentence is tokenized and embedded, and positional encodings are added to inject word order information (since attention alone doesn't capture sequence position). This enriched representation then passes through several identical encoder layers.</p>
+            
+                    <h4>Decoder</h4>
+                    <p>The Decoder is almost the same as the encoder. It has a few key differences:</p>
+                    <ul>
+                        <li><strong>Masked self-attention:</strong> Prevents the model from seeing future tokens during training (critical for generation).</li>
+                        <li><strong>Encoder-decoder attention:</strong> Allows the decoder to attend to the encoder's output. Essential in translation tasks.</li>
+                        <li><strong>Same feedforward, add & norm layers.</strong></li>
+                    </ul>
+                    
+                    <p>During generation, the decoder produces one token at a time, feeding each generated token back in as input for the next.</p>
+            
+                    <h3>Key Innovations</h3>
+                    
+                    <table border="1" cellpadding="5">
+                        <tr>
+                            <th>Component</th>
+                            <th>Function</th>
+                            <th>Impact</th>
+                        </tr>
+                        <tr>
+                            <td>Multi-Head Attention</td>
+                            <td>Multiple attention heads focus on different types of relationships</td>
+                            <td>Captures diverse linguistic patterns simultaneously</td>
+                        </tr>
+                        <tr>
+                            <td>Positional Encoding</td>
+                            <td>Sine/cosine functions provide position information</td>
+                            <td>Gives sense of word order without recurrence</td>
+                        </tr>
+                        <tr>
+                            <td>Layer Normalization</td>
+                            <td>Stabilizes training of deep networks</td>
+                            <td>Enables stacking many layers</td>
+                        </tr>
+                    </table>
+            
+                    <h3>The Transformer Revolution</h3>
+                    
+                    <p>Transformer didn't just improve NLP, it changed the game entirely. By introducing self-attention and replacing recurrence, it enabled models to scale like never before. What started as a paper titled "Attention Is All You Need" has grown into an entire ecosystem of powerful language models.</p>
+            
+                    <p>And the architecture isn't limited to text anymore. It's now being applied to images, audio, multimodal models that handle text + images + more. As a result, Transformers have become the foundation of modern AI—and they're not going anywhere anytime soon.</p>
+            
+                    <blockquote>
+                        The Transformer architecture didn't just advance NLP—<br>
+                        it redefined what was possible in artificial intelligence.
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+        <div id="poemLightbox">
+            <span id="closePoem">&times;</span>
+            <div id="poemContent">
+                <h4 id="lightboxPoemTitle"></h4>
+                <div id="lightboxPoemText"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menu-toggle');
+        const navigation = document.getElementById('navigation');
+        
+        menuToggle.addEventListener('click', () => {
+            navigation.classList.toggle('active');
+        });
+        
+        // Get lightbox elements
+        const poemLightbox = document.getElementById('poemLightbox');
+        const lightboxPoemTitle = document.getElementById('lightboxPoemTitle');
+        const lightboxPoemText = document.getElementById('lightboxPoemText');
+        const closePoem = document.getElementById('closePoem');
+
+        // Add click event to all content
+        document.querySelectorAll('.content').forEach((poem) => {
+            poem.addEventListener('click', () => {
+                const title = poem.querySelector('.poemTitle').textContent;
+                const content = poem.querySelector('.innerContent'); 
+                const text = content.innerHTML; // Get the full HTML content
+
+                // Set lightbox content
+                lightboxPoemTitle.textContent = title;
+                lightboxPoemText.innerHTML = text; // Use innerHTML to preserve formatting
+
+                // Show lightbox
+                poemLightbox.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Prevent scrolling when lightbox is open
+                
+                // Scroll to top of lightbox content
+                lightboxPoemText.scrollTop = 0;
+                
+                // Fix tables in lightbox
+                const tables = lightboxPoemText.querySelectorAll('table');
+                tables.forEach(table => {
+                    table.style.display = 'block';
+                    table.style.overflowX = 'auto';
+                    table.style.whiteSpace = 'nowrap';
+                });
+            });
+        });
+
+        // Close lightbox when clicking the close button
+        closePoem.addEventListener('click', () => {
+            poemLightbox.classList.remove('active');
+            document.body.style.overflow = 'auto'; // Re-enable scrolling
+        });
+
+        // Close lightbox when clicking outside the content
+        poemLightbox.addEventListener('click', (e) => {
+            if (e.target === poemLightbox) {
+                poemLightbox.classList.remove('active');
+                document.body.style.overflow = 'auto'; // Re-enable scrolling
+            }
+        });
+        
+        // Close lightbox with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && poemLightbox.classList.contains('active')) {
+                poemLightbox.classList.remove('active');
+                document.body.style.overflow = 'auto'; // Re-enable scrolling
+            }
+        });
+        
+        // Prevent lightbox content from closing when clicking inside it
+        document.getElementById('poemContent').addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    </script>
 </body>
 </html>
